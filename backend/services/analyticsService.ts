@@ -56,7 +56,6 @@ export const generateAnalytics = async (userId: Types.ObjectId) => {
         _id: null,
         totalPapers: { $sum: 1 },
         totalCitations: { $sum: "$citationCount" },
-        stagesUsed: { $addToSet: "$readingStage" },
         fullyReadCount: {
           $sum: { $cond: [{ $eq: ["$readingStage", "Fully Read"] }, 1, 0] },
         },
@@ -64,33 +63,51 @@ export const generateAnalytics = async (userId: Types.ObjectId) => {
     },
   ];
 
+  // 5. Avg Citations Per Domain
+  const avgCitationsPipeline = [
+    { $match: { user: userId } },
+    {
+      $group: {
+        _id: "$researchDomain",
+        avg: { $avg: "$citationCount" },
+      },
+    },
+  ];
+
   // Execute all pipelines in parallel
-  const [funnel, scatter, stackedBar, summaryResult] = await Promise.all([
+  const [funnel, scatter, stackedBar, summaryResult, avgCitationsResult] = await Promise.all([
     Paper.aggregate(funnelPipeline),
     Paper.aggregate(scatterPipeline),
     Paper.aggregate(stackedBarPipeline),
     Paper.aggregate(summaryPipeline),
+    Paper.aggregate(avgCitationsPipeline),
   ]);
 
   const summaryData = summaryResult[0] || {
     totalPapers: 0,
     totalCitations: 0,
-    stagesUsed: [],
     fullyReadCount: 0,
   };
+
+  const avgCitationsPerDomain = avgCitationsResult.map(item => ({
+    domain: item._id,
+    avg: Number(item.avg.toFixed(1))
+  }));
+
+  const papersByStage = funnel.map(item => ({
+    stage: item._id,
+    count: item.count
+  }));
 
   const summary = {
     totalPapers: summaryData.totalPapers,
     fullyRead: summaryData.fullyReadCount,
-    avgCitations:
-      summaryData.totalPapers > 0
-        ? summaryData.totalCitations / summaryData.totalPapers
-        : 0,
-    activeStages: summaryData.stagesUsed.length,
     completionRate:
       summaryData.totalPapers > 0
         ? ((summaryData.fullyReadCount / summaryData.totalPapers) * 100).toFixed(1)
         : 0,
+    avgCitationsPerDomain,
+    papersByStage,
   };
 
   return {

@@ -4,9 +4,9 @@ import api from "../../../lib/axios.ts";
 export interface AnalyticsSummary {
   totalPapers: number;
   fullyRead: number;
-  avgCitations: number;
-  activeStages: number;
   completionRate: number;
+  avgCitationsPerDomain: { domain: string; avg: number }[];
+  papersByStage: { stage: string; count: number }[];
 }
 
 export interface FunnelData {
