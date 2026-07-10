@@ -17,7 +17,7 @@ import morganMiddleware from "./middleware/morganMiddleware.js";
 const app: Express = express();
 
 // Security Middleware
-app.use(helmet());
+app.use(helmet({ crossOriginResourcePolicy: false }));
 app.use(morganMiddleware);
 
 
@@ -29,7 +29,7 @@ const authLimiter = rateLimit({
 
 // Global Middleware
 const ALLOWED_ORIGINS = process.env.CORS_ORIGINS 
-  ? process.env.CORS_ORIGINS.split(",") 
+  ? process.env.CORS_ORIGINS.split(",").map(origin => origin.trim())
   : ["http://localhost:5173", "http://127.0.0.1:5173"];
 
 app.use(
