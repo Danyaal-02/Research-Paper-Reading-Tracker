@@ -28,18 +28,23 @@ const authLimiter = rateLimit({
 });
 
 // Global Middleware
-const ALLOWED_ORIGINS = (process.env.CORS_ORIGINS || "http://localhost:5173").split(",");
+const ALLOWED_ORIGINS = process.env.CORS_ORIGINS 
+  ? process.env.CORS_ORIGINS.split(",") 
+  : ["http://localhost:5173", "http://127.0.0.1:5173"];
 
 app.use(
   cors({
     origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin || ALLOWED_ORIGINS.includes(origin)) {
         callback(null, true);
       } else {
-        callback(new AppError("Not allowed by CORS", 403));
+        callback(new AppError(`Origin ${origin} not allowed by CORS`, 403));
       }
     },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 app.use(express.json());
