@@ -26,9 +26,9 @@ const AnalyticsScreen = () => {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-6 pb-10">
       <SummaryCards summary={data.summary} />
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <FunnelChart data={data.funnel} />
         <ScatterPlot data={data.scatter} />
       </div>
