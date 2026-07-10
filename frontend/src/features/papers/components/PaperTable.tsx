@@ -10,6 +10,7 @@ import { ArrowUpDown, ArrowUp, ArrowDown, FileText } from "lucide-react";
 import { Paper } from "../types.ts";
 import { paperColumns } from "./PaperTable.columns.tsx";
 import { PAPER_STRINGS } from "../constants.ts";
+import { TableSkeleton } from "../../../components/ui/TableSkeleton.tsx";
 
 interface PaperTableProps {
   papers: Paper[];
@@ -110,13 +111,7 @@ const PaperTable: React.FC<PaperTableProps> = ({
           </thead>
           <tbody>
             {isLoading ? (
-              Array.from({ length: 5 }).map((_, i) => (
-                <tr key={`skeleton-${i}`}>
-                  <td colSpan={table.getAllColumns().length} className="py-2 px-4">
-                    <div className="animate-pulse bg-slate-800/50 h-12 w-full rounded-md" />
-                  </td>
-                </tr>
-              ))
+              <TableSkeleton columns={table.getAllColumns().length} rows={5} />
             ) : (
               table.getRowModel().rows.map((row) => (
                 <tr key={row.id}>

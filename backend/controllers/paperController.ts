@@ -17,7 +17,6 @@ export const addPaper = asyncHandler(async (
     ...req.body,
     user: req.user?._id,
   });
-  logger.info(`Paper added successfully: ${paper.title}`, { context: "Papers" });
   res.status(201).json({ success: true, data: paper });
 });
 
@@ -41,8 +40,6 @@ export const getPapers = asyncHandler(async (
 
   const { papers, total } = await findPapersByUser(req.user.id, filters);
 
-  logger.info(`Fetched ${papers.length} papers for library`, { context: "Papers" });
-
   res.json({
     success: true,
     count: papers.length,
@@ -59,7 +56,6 @@ export const getPaperAnalytics = asyncHandler(async (
 ) => {
   if (!req.user) throw new AppError("No user found", 401);
   const analytics = await generateAnalytics(req.user._id as Types.ObjectId);
-  logger.info(`Generated analytics successfully`, { context: "Papers" });
   res.json({
     success: true,
     data: analytics,

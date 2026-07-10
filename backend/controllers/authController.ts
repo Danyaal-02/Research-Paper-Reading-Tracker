@@ -21,7 +21,6 @@ export const signup = asyncHandler(async (
   const user = await User.create({ email, passwordHash: password });
 
   generateTokenAndSetCookie(res, user.id);
-  logger.info(`User created successfully`, { context: "Auth" });
 
   res.status(201).json({
     success: true,
@@ -40,7 +39,6 @@ export const login = asyncHandler(async (
 
   if (user && (await user.comparePassword(password))) {
     generateTokenAndSetCookie(res, user.id);
-    logger.info(`User authenticated successfully`, { context: "Auth" });
     res.json({
       success: true,
       user: { id: user._id, email: user.email },
@@ -55,7 +53,6 @@ export const logout = (req: Request, res: Response): void => {
     httpOnly: true,
     expires: new Date(0),
   });
-  logger.info("User logged out successfully", { context: "Auth" });
   res.json({ success: true, message: "Logged out successfully" });
 };
 
@@ -68,7 +65,6 @@ export const getMe = asyncHandler(async (
   if (!user) {
     throw new AppError("User not found", 404);
   }
-  logger.info(`Me route accessed`, { context: "Auth" });
   res.json({
     success: true,
     user: { id: user._id, email: user.email },
