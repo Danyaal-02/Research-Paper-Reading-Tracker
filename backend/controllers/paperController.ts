@@ -1,4 +1,5 @@
 import { Response, NextFunction } from "express";
+import { Types } from "mongoose";
 import Paper from "../models/Paper.js";
 import { generateAnalytics } from "../services/analyticsService.js";
 import { AuthRequest } from "../types/index.js";
@@ -57,7 +58,7 @@ export const getPaperAnalytics = asyncHandler(async (
   next: NextFunction
 ) => {
   if (!req.user) throw new AppError("No user found", 401);
-  const analytics = await generateAnalytics(req.user.id);
+  const analytics = await generateAnalytics(req.user._id as Types.ObjectId);
   logger.info(`Generated analytics successfully`, { context: "Papers" });
   res.json({
     success: true,

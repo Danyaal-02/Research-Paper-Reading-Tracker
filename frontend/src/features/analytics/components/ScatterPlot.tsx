@@ -1,6 +1,6 @@
 import React, { useRef, useMemo } from "react";
 import Highcharts from "highcharts";
-import HighchartsReact, { HighchartsReactRefObject } from "highcharts-react-official";
+import HighchartsReactModule, { HighchartsReactRefObject } from "highcharts-react-official";
 import { IMPACT_SCORES } from "../../papers/schemas/paperValidation.ts";
 import { ScatterData } from "../types.ts";
 import { buildScatterOptions } from "./ScatterPlot.config.ts";
@@ -8,6 +8,10 @@ import ChartHeader from "./ChartHeader.tsx";
 import ChartContainer from "./ChartContainer.tsx";
 import { ANALYTICS_STRINGS } from "../constants.ts";
 
+const HighchartsReact = (
+  (HighchartsReactModule as unknown as { default: typeof HighchartsReactModule }).default || 
+  HighchartsReactModule
+);
 
 interface ScatterPlotProps {
   data: ScatterData[];

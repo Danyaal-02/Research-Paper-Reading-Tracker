@@ -64,8 +64,14 @@ const SignupForm: React.FC<SignupFormProps> = ({ onToggle }) => {
       />
 
       <Button type="submit" loading={signupMutation.isPending} className="w-full mt-1">
-        <UserPlus size={16} />
-        Create Account
+        {signupMutation.isPending ? (
+          "Creating account..."
+        ) : (
+          <>
+            <UserPlus size={16} />
+            Create Account
+          </>
+        )}
       </Button>
 
       <p className="text-center text-sm text-surface-400">

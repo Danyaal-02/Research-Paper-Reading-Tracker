@@ -1,6 +1,6 @@
 import React, { useRef, useMemo } from "react";
 import Highcharts from "highcharts";
-import HighchartsReact, { HighchartsReactRefObject } from "highcharts-react-official";
+import HighchartsReactModule, { HighchartsReactRefObject } from "highcharts-react-official";
 import { READING_STAGES } from "../../papers/schemas/paperValidation.ts";
 import { StackedBarData } from "../types.ts";
 import { buildStackedBarOptions } from "./StackedBarChart.config.ts";
@@ -8,6 +8,10 @@ import ChartHeader from "./ChartHeader.tsx";
 import ChartContainer from "./ChartContainer.tsx";
 import { ANALYTICS_STRINGS, STAGE_COLORS_MAP } from "../constants.ts";
 
+const HighchartsReact = (
+  (HighchartsReactModule as unknown as { default: typeof HighchartsReactModule }).default || 
+  HighchartsReactModule
+);
 
 interface StackedBarChartProps {
   data: StackedBarData[];

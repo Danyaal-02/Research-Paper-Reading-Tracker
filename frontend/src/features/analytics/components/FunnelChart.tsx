@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import Highcharts from "highcharts";
-import HighchartsReact, { HighchartsReactRefObject } from "highcharts-react-official";
+import HighchartsReactModule, { HighchartsReactRefObject } from "highcharts-react-official";
 import FunnelModule from "highcharts/modules/funnel";
 import { FunnelData } from "../types.ts";
 import { computeCumulativeFunnel } from "../utils/funnelTransform.ts";
@@ -9,6 +9,10 @@ import ChartHeader from "./ChartHeader.tsx";
 import ChartContainer from "./ChartContainer.tsx";
 import { ANALYTICS_STRINGS } from "../constants.ts";
 
+const HighchartsReact = (
+  (HighchartsReactModule as unknown as { default: typeof HighchartsReactModule }).default || 
+  HighchartsReactModule
+);
 
 if (typeof Highcharts === "object") {
   const initModule = (mod: unknown) => {

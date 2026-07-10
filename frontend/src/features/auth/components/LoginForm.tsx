@@ -56,8 +56,14 @@ const LoginForm: React.FC<LoginFormProps> = ({ onToggle }) => {
       />
 
       <Button type="submit" loading={loginMutation.isPending} className="w-full mt-1">
-        <LogIn size={16} />
-        Sign In
+        {loginMutation.isPending ? (
+          "Signing in..."
+        ) : (
+          <>
+            <LogIn size={16} />
+            Sign In
+          </>
+        )}
       </Button>
 
       <p className="text-center text-sm text-surface-400">

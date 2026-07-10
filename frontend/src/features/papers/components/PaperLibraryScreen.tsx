@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Plus, Filter, Loader2, Search, RotateCcw } from "lucide-react";
+import { Plus, Filter, Search, RotateCcw } from "lucide-react";
 import Button from "../../../components/ui/Button";
 import FilterPanel from "./FilterPanel";
 import PaperTable from "./PaperTable";
@@ -95,26 +95,20 @@ const PaperLibraryScreen = () => {
       )}
 
       {/* Table */}
-      {isLoading ? (
-        <div className="glass-card p-12 text-center">
-          <Loader2 size={32} className="animate-spin text-primary-400 mx-auto mb-3" />
-          <p className="text-surface-400 text-sm">Loading your papers…</p>
-        </div>
-      ) : (
-        <PaperTable 
-          papers={papers} 
-          sorting={filters.sorting!}
-          onSortingChange={(updater) => {
-            setFilters((prev) => {
-              const nextSorting = typeof updater === 'function' ? updater(prev.sorting || []) : updater;
-              return { ...prev, sorting: nextSorting };
-            });
-          }}
-          fetchNextPage={fetchNextPage}
-          hasNextPage={hasNextPage}
-          isFetchingNextPage={isFetchingNextPage}
-        />
-      )}
+      <PaperTable 
+        papers={papers} 
+        sorting={filters.sorting!}
+        onSortingChange={(updater) => {
+          setFilters((prev) => {
+            const nextSorting = typeof updater === 'function' ? updater(prev.sorting || []) : updater;
+            return { ...prev, sorting: nextSorting };
+          });
+        }}
+        fetchNextPage={fetchNextPage}
+        hasNextPage={hasNextPage}
+        isFetchingNextPage={isFetchingNextPage}
+        isLoading={isLoading}
+      />
 
       {/* Add Paper Modal */}
       <AddPaperModal

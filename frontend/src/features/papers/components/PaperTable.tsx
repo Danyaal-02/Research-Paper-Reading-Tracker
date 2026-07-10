@@ -18,6 +18,7 @@ interface PaperTableProps {
   fetchNextPage: () => void;
   hasNextPage: boolean;
   isFetchingNextPage: boolean;
+  isLoading?: boolean;
 }
 
 const PaperTable: React.FC<PaperTableProps> = ({ 
@@ -26,7 +27,8 @@ const PaperTable: React.FC<PaperTableProps> = ({
   onSortingChange,
   fetchNextPage,
   hasNextPage,
-  isFetchingNextPage
+  isFetchingNextPage,
+  isLoading
 }) => {
   const columns = useMemo(() => paperColumns, []);
   const observerTarget = useRef<HTMLDivElement>(null);
@@ -57,7 +59,7 @@ const PaperTable: React.FC<PaperTableProps> = ({
     manualSorting: true,
   });
 
-  if (papers.length === 0) {
+  if (!isLoading && papers.length === 0) {
     return (
       <div className="glass-card p-12 text-center animate-fade-in">
         <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-surface-800/80 flex items-center justify-center">
@@ -107,15 +109,25 @@ const PaperTable: React.FC<PaperTableProps> = ({
             ))}
           </thead>
           <tbody>
-            {table.getRowModel().rows.map((row) => (
-              <tr key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            {isLoading ? (
+              Array.from({ length: 5 }).map((_, i) => (
+                <tr key={`skeleton-${i}`}>
+                  <td colSpan={table.getAllColumns().length} className="py-2 px-4">
+                    <div className="animate-pulse bg-slate-800/50 h-12 w-full rounded-md" />
                   </td>
-                ))}
-              </tr>
-            ))}
+                </tr>
+              ))
+            ) : (
+              table.getRowModel().rows.map((row) => (
+                <tr key={row.id}>
+                  {row.getVisibleCells().map((cell) => (
+                    <td key={cell.id}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
