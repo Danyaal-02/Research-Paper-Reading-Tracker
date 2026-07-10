@@ -1,16 +1,11 @@
 import { Types } from 'mongoose';
-import Paper from '../models/Paper.js';
+import Paper, { IPaper } from '../models/Paper.js';
 import { getDateRangeStart } from '../utils/dateFilters.js';
+import { PaperFilters } from '../types/index.js';
+import { FilterQuery } from 'mongoose';
 
-interface PaperQueryFilters {
-  readingStage?: string[];
-  researchDomain?: string[];
-  impactScore?: string[];
-  dateRange?: string;
-}
-
-export const findPapersByUser = async (userId: Types.ObjectId, filters: PaperQueryFilters) => {
-  const query: Record<string, any> = { user: userId };
+export const findPapersByUser = async (userId: string, filters: PaperFilters) => {
+  const query: FilterQuery<IPaper> = { user: userId };
 
   if (filters.readingStage?.length)   query.readingStage   = { $in: filters.readingStage };
   if (filters.researchDomain?.length) query.researchDomain = { $in: filters.researchDomain };
@@ -19,5 +14,36 @@ export const findPapersByUser = async (userId: Types.ObjectId, filters: PaperQue
   const startDate = filters.dateRange ? getDateRangeStart(filters.dateRange) : null;
   if (startDate) query.dateAdded = { $gte: startDate };
 
-  return Paper.find(query).sort({ dateAdded: -1 });
+  if (filters.search) {
+    query.$or = [
+      { title: { $regex: filters.search, $options: 'i' } },
+      { firstAuthor: { $regex: filters.search, $options: 'i' } }
+    ];
+  }
+
+  // Parse multi-column sort: "citationCount,-dateAdded" -> { citationCount: 1, dateAdded: -1 }
+  const sortObj: Record<string, 1 | -1> = {};
+  if (filters.sort) {
+    const sortKeys = filters.sort.split(',');
+    sortKeys.forEach((key) => {
+      const isDesc = key.startsWith('-');
+      const field = isDesc ? key.substring(1) : key;
+      sortObj[field] = isDesc ? -1 : 1;
+    });
+  } else {
+    // Default fallback
+    sortObj['dateAdded'] = -1;
+  }
+
+  const page = Math.max(1, filters.page || 1);
+  const limit = Math.max(1, filters.limit || 10);
+  const skip = (page - 1) * limit;
+
+  const total = await Paper.countDocuments(query);
+  const papers = await Paper.find(query)
+    .sort(sortObj)
+    .skip(skip)
+    .limit(limit);
+
+  return { papers, total };
 };

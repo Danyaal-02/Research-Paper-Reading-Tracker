@@ -3,8 +3,8 @@ import logger from "../utils/logger.js";
 
 // Override the stream method by telling Morgan to use our custom logger instead of the console.log.
 const stream: StreamOptions = {
-  // Use the http severity
-  write: (message) => logger.http(message.substring(0, message.lastIndexOf("\n")), { context: "HTTP" }),
+  // Use the info severity
+  write: (message) => logger.info(message.substring(0, message.lastIndexOf("\n"))),
 };
 
 // Skip all the Morgan http log if the application is not running in development mode.
@@ -17,7 +17,7 @@ const skip = () => {
 
 // Build the morgan middleware
 const morganMiddleware = morgan(
-  ":method | :url | :status | :response-time ms",
+  ":method :url :status - :response-time ms",
   { stream, skip }
 );
 

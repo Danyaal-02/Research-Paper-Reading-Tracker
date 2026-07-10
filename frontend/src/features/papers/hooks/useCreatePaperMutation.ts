@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "../../../lib/axios.ts";
+import axios from "axios";
 import toast from "react-hot-toast";
 import { PaperFormData } from "../schemas/paperValidation.ts";
 import { PAPER_STRINGS } from "../constants.ts";
@@ -19,9 +20,13 @@ const useCreatePaperMutation = () => {
       queryClient.invalidateQueries({ queryKey: ["analytics"] });
       toast.success(PAPER_STRINGS.ADD_SUCCESS);
     },
-    onError: (error: any) => {
-      const message =
-        error.response?.data?.message || PAPER_STRINGS.ADD_ERROR;
+    onError: (error: unknown) => {
+      let message: string = PAPER_STRINGS.ADD_ERROR;
+      if (axios.isAxiosError(error)) {
+        message = error.response?.data?.message || message;
+      } else if (error instanceof Error) {
+        message = error.message;
+      }
       toast.error(message);
     },
   });

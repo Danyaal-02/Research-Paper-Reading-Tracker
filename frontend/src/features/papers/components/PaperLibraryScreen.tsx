@@ -1,10 +1,12 @@
-import { useState } from "react";
-import { Plus, Filter, Loader2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Plus, Filter, Loader2, Search, RotateCcw } from "lucide-react";
 import Button from "../../../components/ui/Button";
 import FilterPanel from "./FilterPanel";
 import PaperTable from "./PaperTable";
 import AddPaperModal from "./AddPaperModal";
-import usePapersQuery, { PaperFilters } from "../hooks/usePapersQuery";
+import useInfinitePapersQuery from "../hooks/usePapersQuery";
+import { PaperFilters } from "../types";
+import { useDebounce } from "../../../hooks/useDebounce";
 
 const PaperLibraryScreen = () => {
   const [showFilters, setShowFilters] = useState(false);
@@ -14,10 +16,19 @@ const PaperLibraryScreen = () => {
     researchDomain: [],
     impactScore: [],
     dateRange: "All time",
+    sorting: [{ id: "dateAdded", desc: true }],
+    search: "",
   });
 
-  const { data, isLoading } = usePapersQuery(filters);
-  const papers = data?.papers || [];
+  const [searchInput, setSearchInput] = useState("");
+  const debouncedSearch = useDebounce(searchInput, 300);
+
+  useEffect(() => {
+    setFilters((prev) => ({ ...prev, search: debouncedSearch }));
+  }, [debouncedSearch]);
+
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfinitePapersQuery(filters);
+  const papers = data?.pages.flatMap((page) => page.papers) || [];
 
   const activeFilterCount =
     (filters.readingStage?.length || 0) +
@@ -28,8 +39,36 @@ const PaperLibraryScreen = () => {
   return (
     <div className="flex flex-col gap-4">
       {/* Action Bar */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <div className="relative flex-1 md:w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-surface-400" size={16} />
+            <input
+              type="text"
+              placeholder="Search papers..."
+              className="input-base pl-9 w-full"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+            />
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setSearchInput("");
+              setFilters({
+                readingStage: [],
+                researchDomain: [],
+                impactScore: [],
+                dateRange: "All time",
+                sorting: [{ id: "dateAdded", desc: true }],
+                search: "",
+              });
+            }}
+          >
+            <RotateCcw size={15} />
+            Reset
+          </Button>
           <Button
             variant="secondary"
             size="sm"
@@ -52,7 +91,7 @@ const PaperLibraryScreen = () => {
 
       {/* Filter Panel */}
       {showFilters && (
-        <FilterPanel filters={filters} onFilterChange={setFilters} />
+        <FilterPanel filters={filters} onFilterChange={setFilters} onClose={() => setShowFilters(false)} />
       )}
 
       {/* Table */}
@@ -62,7 +101,19 @@ const PaperLibraryScreen = () => {
           <p className="text-surface-400 text-sm">Loading your papers…</p>
         </div>
       ) : (
-        <PaperTable papers={papers} />
+        <PaperTable 
+          papers={papers} 
+          sorting={filters.sorting!}
+          onSortingChange={(updater) => {
+            setFilters((prev) => {
+              const nextSorting = typeof updater === 'function' ? updater(prev.sorting || []) : updater;
+              return { ...prev, sorting: nextSorting };
+            });
+          }}
+          fetchNextPage={fetchNextPage}
+          hasNextPage={hasNextPage}
+          isFetchingNextPage={isFetchingNextPage}
+        />
       )}
 
       {/* Add Paper Modal */}

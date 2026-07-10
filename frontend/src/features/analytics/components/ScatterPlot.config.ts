@@ -2,7 +2,7 @@ import Highcharts from 'highcharts';
 import { BASE_DARK_THEME } from './chartTheme.ts';
 
 export const buildScatterOptions = (
-  series: Highcharts.SeriesOptionsType[],
+  series: Highcharts.SeriesOptionsType[]
 ): Highcharts.Options => ({
   ...BASE_DARK_THEME,
   chart: {
@@ -33,10 +33,10 @@ export const buildScatterOptions = (
   },
   tooltip: {
     ...BASE_DARK_THEME.tooltip,
-    formatter: function (this: any) {
+    formatter: function (this: Highcharts.Point) {
       return `
         <div style="text-align: center; font-family: inherit;">
-          <b style="display: block; margin-bottom: 4px;">${this.point.name}</b>
+          <b style="display: block; margin-bottom: 4px;">${this.name}</b>
           <span style="color: #94a3b8">Citations:</span> <b style="color: ${this.series.color}">${this.x}</b><br/>
           <span style="color: #94a3b8">Impact:</span> <b>${this.series.name}</b>
         </div>

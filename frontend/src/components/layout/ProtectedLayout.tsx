@@ -1,4 +1,4 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import api from "../../lib/axios.ts";
@@ -8,6 +8,7 @@ import { useAuthQuery } from "../../features/auth/hooks/useAuthQuery.ts";
 
 const ProtectedLayout = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const {
     data: user,
     isLoading: authLoading,
@@ -33,6 +34,7 @@ const ProtectedLayout = () => {
   const handleLogout = async () => {
     await api.post("/auth/logout");
     queryClient.clear();
+    navigate("/login", { replace: true });
   };
 
   return (

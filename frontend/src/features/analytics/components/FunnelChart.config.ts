@@ -2,8 +2,9 @@ import Highcharts from 'highcharts';
 import { BASE_DARK_THEME } from './chartTheme.ts';
 import { FUNNEL_STAGE_COLORS } from '../constants.ts';
 
+
 export const buildFunnelOptions = (
-  chartData: any[],
+  chartData: [string, number][],
   peakCount: number
 ): Highcharts.Options => ({
   ...BASE_DARK_THEME,
@@ -33,12 +34,13 @@ export const buildFunnelOptions = (
   },
   tooltip: {
     ...BASE_DARK_THEME.tooltip,
-    formatter: function (this: any) {
-      const percentage = ((this.y / peakCount) * 100).toFixed(1);
+    formatter: function (this: Highcharts.Point) {
+      const yVal = this.y || 0;
+      const percentage = ((yVal / peakCount) * 100).toFixed(1);
       return `
         <div style="text-align: center; font-family: inherit;">
           <b style="color: ${this.color}; display: block; margin-bottom: 4px;">${this.key}</b>
-          <span style="color: #94a3b8">Count:</span> <b>${this.y}</b><br/>
+          <span style="color: #94a3b8">Count:</span> <b>${yVal}</b><br/>
           <span style="color: #94a3b8">Retention:</span> <b>${percentage}%</b>
         </div>
       `;
@@ -46,9 +48,9 @@ export const buildFunnelOptions = (
   },
   series: [
     {
-      type: "funnel",
+      type: "funnel" as const,
       name: "Papers",
       data: chartData,
-    },
+    } as Highcharts.SeriesOptionsType,
   ],
 });

@@ -26,8 +26,8 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
       innerSelectRef.current = node;
       if (typeof ref === 'function') {
         ref(node);
-      } else if (ref) {
-        (ref as any).current = node;
+      } else if (ref && 'current' in ref) {
+        (ref as React.MutableRefObject<HTMLSelectElement>).current = node;
       }
     };
 
@@ -80,7 +80,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
            onChange({
              target: innerSelectRef.current,
              currentTarget: innerSelectRef.current,
-           } as any);
+           } as unknown as React.ChangeEvent<HTMLSelectElement>);
         }
       }
     };

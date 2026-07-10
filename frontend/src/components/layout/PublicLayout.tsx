@@ -2,7 +2,9 @@ import { Navigate, Outlet } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { useAuthQuery } from "../../features/auth/hooks/useAuthQuery.ts";
 
-const PublicLayout = () => {
+import React from "react";
+
+const PublicLayout: React.FC = () => {
   const {
     data: user,
     isLoading: authLoading,

@@ -1,6 +1,6 @@
 import React from "react";
 import { BookOpen, TrendingUp, BarChart } from "lucide-react";
-import { AnalyticsSummary } from "../hooks/useAnalyticsQuery.ts";
+import { AnalyticsSummary } from "../types.ts";
 import MetricRow from "./MetricRow.tsx";
 import { ANALYTICS_STRINGS } from "../constants.ts";
 
@@ -44,7 +44,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ summary }) => {
         </div>
         <div className="space-y-2 max-h-50 overflow-y-auto pr-1 custom-scrollbar">
           {summary.papersByStage.length > 0 ? (
-            summary.papersByStage.map((s) => (
+            summary.papersByStage.map((s: { stage: string; count: number }) => (
               <MetricRow key={s.stage} label={s.stage} value={s.count} />
             ))
           ) : (
@@ -63,7 +63,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ summary }) => {
         </div>
         <div className="space-y-2 max-h-50 overflow-y-auto pr-1 custom-scrollbar">
           {summary.avgCitationsPerDomain.length > 0 ? (
-            summary.avgCitationsPerDomain.map((d) => (
+            summary.avgCitationsPerDomain.map((d: { domain: string; avg: number }) => (
               <MetricRow 
                 key={d.domain} 
                 label={d.domain} 

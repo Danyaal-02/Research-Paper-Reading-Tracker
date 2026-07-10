@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 import Paper from "../models/Paper.js"; // Note: .js extension for ES Module resolution in TS
+import User from "../models/User.js";
 import logger from "../utils/logger.js";
 
 // Load environment variables from the parent directory's .env file
@@ -10,10 +11,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, "..", ".env") });
 
-// --- CONFIGURATION ---
-// Hardcoded target user ID (Must be a valid MongoDB ObjectId)
-// You can replace this with an actual user ID from your database
-const TARGET_USER_ID = "65b9df0a1234567890abcdef"; 
+// We will fetch the TARGET_USER_ID dynamically from the database
+// by finding the most recently created user. 
 
 const seedDatabase = async () => {
   try {
@@ -22,6 +21,16 @@ const seedDatabase = async () => {
     await mongoose.connect(MONGO_URI);
     logger.info("✅ Successfully connected to MongoDB for seeding.", { context: "Seed" });
 
+    // Fetch the most recently created user
+    const latestUser = await User.findOne().sort({ createdAt: -1 });
+    if (!latestUser) {
+      logger.error("❌ No users found in the database. Please create an account in the UI first.", { context: "Seed" });
+      process.exit(1);
+    }
+    
+    const TARGET_USER_ID = latestUser._id.toString();
+    logger.info(`Found latest user: ${latestUser.email} (${TARGET_USER_ID}). Seeding data...`, { context: "Seed" });
+
     // Helper for date offsets
     const getDaysAgo = (days: number) => {
       const date = new Date();
@@ -29,106 +38,40 @@ const seedDatabase = async () => {
       return date;
     };
 
-    // 2. Define Mock Data
-    const mockPapers = [
-      // --- THIS WEEK (< 7 days) ---
-      {
-        user: TARGET_USER_ID,
-        title: "Attention Is All You Need",
-        firstAuthor: "Ashish Vaswani",
-        researchDomain: "Computer Science",
-        readingStage: "Fully Read",
-        citationCount: 95432,
-        impactScore: "High Impact",
-        dateAdded: getDaysAgo(2),
-      },
-      {
-        user: TARGET_USER_ID,
-        title: "CRISPR-Cas9 Structures and Mechanisms",
-        firstAuthor: "F. Jiang",
-        researchDomain: "Biology",
-        readingStage: "Methodology Done",
-        citationCount: 1423,
-        impactScore: "High Impact",
-        dateAdded: getDaysAgo(5),
-      },
+    // 2. Define Mock Data (100 Entries)
+    const DOMAINS = ["Computer Science", "Biology", "Physics", "Chemistry", "Mathematics", "Social Sciences"];
+    const STAGES = ["Abstract Read", "Introduction Done", "Methodology Done", "Results Analyzed", "Fully Read", "Notes Completed"];
+    const IMPACT_SCORES = ["High Impact", "Medium Impact", "Low Impact", "Unknown"];
+    const FIRST_NAMES = ["Alan", "Ada", "Claude", "Grace", "Tim", "Marie", "Albert", "Niels", "Rosalind", "Richard", "Linus"];
+    const LAST_NAMES = ["Turing", "Lovelace", "Shannon", "Hopper", "Berners-Lee", "Curie", "Einstein", "Bohr", "Franklin", "Feynman", "Torvalds"];
+    const TOPICS = ["Networks", "Algorithms", "Machine Learning", "Quantum Computing", "Genomics", "Thermodynamics", "Cryptography", "Data Structures", "Particle Physics", "Cognitive Psychology"];
+    const ACTIONS = ["Analysis of", "Advances in", "A New Approach to", "Understanding", "Deep Dive into", "Fundamentals of", "Applications of", "The Future of"];
 
-      // --- THIS MONTH (< 30 days) ---
-      {
-        user: TARGET_USER_ID,
-        title: "Quantum Supremacy Using a Programmable Superconducting Processor",
-        firstAuthor: "Frank Arute",
-        researchDomain: "Physics",
-        readingStage: "Abstract Read",
-        citationCount: 8901,
-        impactScore: "High Impact",
-        dateAdded: getDaysAgo(15),
-      },
-      {
-        user: TARGET_USER_ID,
-        title: "Advances in Asymmetric Organocatalysis",
-        firstAuthor: "Benjamin List",
-        researchDomain: "Chemistry",
-        readingStage: "Notes Completed",
-        citationCount: 350,
-        impactScore: "Medium Impact",
-        dateAdded: getDaysAgo(25),
-      },
+    const mockPapers = Array.from({ length: 100 }).map((_, i) => {
+      // Randomized Fields
+      const domain = DOMAINS[Math.floor(Math.random() * DOMAINS.length)];
+      const stage = STAGES[Math.floor(Math.random() * STAGES.length)];
+      const impact = IMPACT_SCORES[Math.floor(Math.random() * IMPACT_SCORES.length)];
+      const firstName = FIRST_NAMES[Math.floor(Math.random() * FIRST_NAMES.length)];
+      const lastName = LAST_NAMES[Math.floor(Math.random() * LAST_NAMES.length)];
+      const topic = TOPICS[Math.floor(Math.random() * TOPICS.length)];
+      const action = ACTIONS[Math.floor(Math.random() * ACTIONS.length)];
 
-      // --- LAST 3 MONTHS (< 90 days) ---
-      {
-        user: TARGET_USER_ID,
-        title: "A Mathematical Theory of Communication",
-        firstAuthor: "Claude Shannon",
-        researchDomain: "Mathematics",
-        readingStage: "Results Analyzed",
-        citationCount: 135400,
-        impactScore: "High Impact",
-        dateAdded: getDaysAgo(45),
-      },
-      {
-        user: TARGET_USER_ID,
-        title: "The WEIRDest People in the World",
-        firstAuthor: "Joseph Henrich",
-        researchDomain: "Social Sciences",
-        readingStage: "Introduction Done",
-        citationCount: 412,
-        impactScore: "Medium Impact",
-        dateAdded: getDaysAgo(80),
-      },
+      const title = `${action} ${topic} (${i + 1})`;
+      const citationCount = Math.floor(Math.pow(Math.random(), 3) * 50000); // Skewed towards lower citations, but possible high
+      const daysAgo = Math.floor(Math.random() * 365); // Random day within the last year
 
-      // --- ALL TIME (> 90 days) ---
-      {
+      return {
         user: TARGET_USER_ID,
-        title: "Deep Residual Learning for Image Recognition",
-        firstAuthor: "Kaiming He",
-        researchDomain: "Computer Science",
-        readingStage: "Notes Completed",
-        citationCount: 154000,
-        impactScore: "High Impact",
-        dateAdded: getDaysAgo(150),
-      },
-      {
-        user: TARGET_USER_ID,
-        title: "Low-impact preliminary study on cellular respiration",
-        firstAuthor: "John Doe",
-        researchDomain: "Biology",
-        readingStage: "Abstract Read",
-        citationCount: 12,
-        impactScore: "Low Impact",
-        dateAdded: getDaysAgo(200),
-      },
-      {
-        user: TARGET_USER_ID,
-        title: "Unpublished pre-print on network topologies",
-        firstAuthor: "Jane Smith",
-        researchDomain: "Computer Science",
-        readingStage: "Introduction Done",
-        citationCount: 0,
-        impactScore: "Unknown",
-        dateAdded: getDaysAgo(120),
-      }
-    ];
+        title,
+        firstAuthor: `${firstName} ${lastName}`,
+        researchDomain: domain,
+        readingStage: stage,
+        citationCount,
+        impactScore: impact,
+        dateAdded: getDaysAgo(daysAgo),
+      };
+    });
 
     // 3. Purge existing items for the target user
     const deleteResult = await Paper.deleteMany({ user: TARGET_USER_ID });
@@ -139,8 +82,10 @@ const seedDatabase = async () => {
     logger.info(`🌱 Successfully seeded ${insertResult.length} mock paper(s) into the database!`, { context: "Seed" });
 
     process.exit(0);
-  } catch (error: any) {
-    logger.error(`❌ Error seeding the database: ${error.message || error}`, { context: "Seed" });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      logger.error(`❌ Error seeding the database: ${error.message}`, { context: "Seed" });
+    }
     process.exit(1);
   }
 };

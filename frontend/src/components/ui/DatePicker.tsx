@@ -25,8 +25,8 @@ const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
       hiddenInputRef.current = node;
       if (typeof ref === 'function') {
         ref(node);
-      } else if (ref) {
-        (ref as any).current = node;
+      } else if (ref && 'current' in ref) {
+        (ref as React.MutableRefObject<HTMLInputElement>).current = node;
       }
     };
 
@@ -108,7 +108,7 @@ const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
           onChange({
             target: hiddenInputRef.current,
             currentTarget: hiddenInputRef.current,
-          } as any);
+          } as unknown as React.ChangeEvent<HTMLInputElement>);
         }
       }
     };

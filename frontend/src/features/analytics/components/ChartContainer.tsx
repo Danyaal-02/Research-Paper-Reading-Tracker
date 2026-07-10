@@ -1,6 +1,10 @@
 import React from 'react';
 
-const ChartContainer: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+interface ChartContainerProps {
+  children: React.ReactNode;
+}
+
+const ChartContainer: React.FC<ChartContainerProps> = ({ children }) => (
   <div className="w-full h-87.5 overflow-hidden">{children}</div>
 );
 

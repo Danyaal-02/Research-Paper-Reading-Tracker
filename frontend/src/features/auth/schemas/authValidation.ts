@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*])/;
+
 export const loginSchema = z.object({
   email: z
     .string()
@@ -20,7 +22,8 @@ export const signupSchema = z
     password: z
       .string()
       .min(1, "Password is required")
-      .min(6, "Password must be at least 6 characters"),
+      .min(8, "Password must be at least 8 characters")
+      .regex(passwordRegex, "Password must contain at least one number and one special character"),
     confirmPassword: z.string().min(1, "Please confirm your password"),
   })
   .refine((data) => data.password === data.confirmPassword, {

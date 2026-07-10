@@ -1,21 +1,20 @@
 import React, { useRef, useMemo } from "react";
 import Highcharts from "highcharts";
-import HighchartsReactModule from "highcharts-react-official";
+import HighchartsReact, { HighchartsReactRefObject } from "highcharts-react-official";
 import { READING_STAGES } from "../../papers/schemas/paperValidation.ts";
-import { StackedBarData } from "../hooks/useAnalyticsQuery.ts";
+import { StackedBarData } from "../types.ts";
 import { buildStackedBarOptions } from "./StackedBarChart.config.ts";
 import ChartHeader from "./ChartHeader.tsx";
 import ChartContainer from "./ChartContainer.tsx";
 import { ANALYTICS_STRINGS, STAGE_COLORS_MAP } from "../constants.ts";
 
-const HighchartsReact = (HighchartsReactModule as any).default || HighchartsReactModule;
 
 interface StackedBarChartProps {
   data: StackedBarData[];
 }
 
 const StackedBarChart: React.FC<StackedBarChartProps> = ({ data = [] }) => {
-  const chartRef = useRef<any>(null);
+  const chartRef = useRef<HighchartsReactRefObject>(null);
 
   const categories = useMemo(() => data.map((d) => d._id), [data]);
 
@@ -39,7 +38,11 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({ data = [] }) => {
     <div className="glass-card p-6 flex flex-col animate-fade-in" style={{ animationDelay: "300ms" }}>
       <ChartHeader title={ANALYTICS_STRINGS.STACKED_TITLE} subtitle={ANALYTICS_STRINGS.STACKED_SUBTITLE} />
       <ChartContainer>
-        <HighchartsReact ref={chartRef} highcharts={Highcharts} options={options} />
+        {data.length > 0 ? (
+          <HighchartsReact ref={chartRef} highcharts={Highcharts} options={options} />
+        ) : (
+          <div className="flex h-full items-center justify-center text-sm text-surface-500">No data available</div>
+        )}
       </ChartContainer>
     </div>
   );

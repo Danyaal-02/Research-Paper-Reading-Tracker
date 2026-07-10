@@ -1,8 +1,8 @@
 import { ColumnDef } from "@tanstack/react-table";
 import Badge from "../../../components/ui/Badge.tsx";
-import { Paper } from "../hooks/usePapersQuery.ts";
+import { Paper } from "../types.ts";
 
-export const paperColumns: ColumnDef<Paper, any>[] = [
+export const paperColumns: ColumnDef<Paper>[] = [
   {
     accessorKey: "title",
     header: "Paper Title",

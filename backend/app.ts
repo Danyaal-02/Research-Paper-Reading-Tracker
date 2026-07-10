@@ -63,6 +63,6 @@ app.use("/api/auth", authRoutes);
 app.use("/api/papers", paperRoutes);
 
 // Global Error Handler
-app.use(errorHandler as any);
+app.use(errorHandler as express.ErrorRequestHandler);
 
 export default app;

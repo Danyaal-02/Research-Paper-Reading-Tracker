@@ -12,10 +12,9 @@ const colors = {
 winston.addColors(colors);
 
 const format = winston.format.combine(
-  winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
   winston.format.colorize({ all: true }),
   winston.format.printf(
-    (info) => `[${info.timestamp}] [${info.level}]${info.context ? ` [${info.context}]` : ""}: ${info.message}`
+    (info) => `[${info.level.toUpperCase()}] ${info.message}`
   )
 );
 

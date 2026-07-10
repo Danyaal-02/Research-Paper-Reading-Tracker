@@ -1,20 +1,21 @@
 import React from "react";
 import Checkbox from "../../../components/ui/Checkbox.tsx";
-import { Filter, RotateCcw } from "lucide-react";
+import { Filter, X } from "lucide-react";
 import {
   RESEARCH_DOMAINS,
   READING_STAGES,
   IMPACT_SCORES,
 } from "../schemas/paperValidation.ts";
-import { PaperFilters } from "../hooks/usePapersQuery.ts";
+import { PaperFilters } from "../types.ts";
 import { DATE_OPTIONS, DEFAULT_DATE_RANGE } from "../constants.ts";
 
 interface FilterPanelProps {
   filters: PaperFilters;
   onFilterChange: (filters: PaperFilters) => void;
+  onClose: () => void;
 }
 
-const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onFilterChange }) => {
+const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onFilterChange, onClose }) => {
   const toggleArrayFilter = (key: keyof PaperFilters, value: string) => {
     const current = (filters[key] as string[]) || [];
     const updated = current.includes(value)
@@ -27,21 +28,6 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onFilterChange }) =>
     onFilterChange({ ...filters, dateRange: value });
   };
 
-  const resetFilters = () => {
-    onFilterChange({
-      readingStage: [],
-      researchDomain: [],
-      impactScore: [],
-      dateRange: DEFAULT_DATE_RANGE,
-    });
-  };
-
-  const hasActiveFilters =
-    (filters.readingStage?.length ?? 0) > 0 ||
-    (filters.researchDomain?.length ?? 0) > 0 ||
-    (filters.impactScore?.length ?? 0) > 0 ||
-    (filters.dateRange && filters.dateRange !== DEFAULT_DATE_RANGE);
-
   return (
     <div className="glass-card-sm p-5 animate-fade-in">
       <div className="flex items-center justify-between mb-4">
@@ -49,15 +35,12 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onFilterChange }) =>
           <Filter size={16} />
           <h3 className="text-sm font-semibold">Filters</h3>
         </div>
-        {hasActiveFilters && (
-          <button
-            onClick={resetFilters}
-            className="flex items-center gap-1.5 text-xs text-surface-400 hover:text-primary-400 transition-colors cursor-pointer"
-          >
-            <RotateCcw size={12} />
-            Reset
-          </button>
-        )}
+        <button
+          onClick={onClose}
+          className="flex items-center gap-1.5 text-xs text-surface-400 hover:text-primary-400 transition-colors cursor-pointer"
+        >
+          <X size={14} />
+        </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

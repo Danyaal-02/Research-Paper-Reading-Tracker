@@ -1,14 +1,13 @@
 import React, { useRef, useMemo } from "react";
 import Highcharts from "highcharts";
-import HighchartsReactModule from "highcharts-react-official";
+import HighchartsReact, { HighchartsReactRefObject } from "highcharts-react-official";
 import { IMPACT_SCORES } from "../../papers/schemas/paperValidation.ts";
-import { ScatterData } from "../hooks/useAnalyticsQuery.ts";
+import { ScatterData } from "../types.ts";
 import { buildScatterOptions } from "./ScatterPlot.config.ts";
 import ChartHeader from "./ChartHeader.tsx";
 import ChartContainer from "./ChartContainer.tsx";
 import { ANALYTICS_STRINGS } from "../constants.ts";
 
-const HighchartsReact = (HighchartsReactModule as any).default || HighchartsReactModule;
 
 interface ScatterPlotProps {
   data: ScatterData[];
@@ -22,7 +21,7 @@ const IMPACT_COLORS: Record<string, string> = {
 };
 
 const ScatterPlot: React.FC<ScatterPlotProps> = ({ data = [] }) => {
-  const chartRef = useRef<any>(null);
+  const chartRef = useRef<HighchartsReactRefObject>(null);
 
   const series = useMemo(() => {
     return IMPACT_SCORES.map((score) => {
@@ -53,7 +52,11 @@ const ScatterPlot: React.FC<ScatterPlotProps> = ({ data = [] }) => {
     <div className="glass-card p-6 flex flex-col animate-fade-in" style={{ animationDelay: "250ms" }}>
       <ChartHeader title={ANALYTICS_STRINGS.SCATTER_TITLE} subtitle={ANALYTICS_STRINGS.SCATTER_SUBTITLE} />
       <ChartContainer>
-        <HighchartsReact ref={chartRef} highcharts={Highcharts} options={options} />
+        {data.length > 0 ? (
+          <HighchartsReact ref={chartRef} highcharts={Highcharts} options={options} />
+        ) : (
+          <div className="flex h-full items-center justify-center text-sm text-surface-500">No data available</div>
+        )}
       </ChartContainer>
     </div>
   );

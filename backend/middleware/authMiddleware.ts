@@ -3,10 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import User, { IUser } from "../models/User.js";
 import { JWT_SECRET } from "../constants/auth.js";
 import { AppError } from "../utils/AppError.js";
-
-export interface AuthRequest extends Request {
-  user?: IUser;
-}
+import { AuthRequest } from "../types/index.js";
 
 export const protect = async (
   req: AuthRequest,

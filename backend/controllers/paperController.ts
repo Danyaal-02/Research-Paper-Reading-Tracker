@@ -1,7 +1,7 @@
 import { Response, NextFunction } from "express";
 import Paper from "../models/Paper.js";
 import { generateAnalytics } from "../services/analyticsService.js";
-import { AuthRequest } from "../middleware/authMiddleware.js";
+import { AuthRequest } from "../types/index.js";
 import { findPapersByUser } from "../services/paperService.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { AppError } from "../utils/AppError.js";
@@ -16,7 +16,7 @@ export const addPaper = asyncHandler(async (
     ...req.body,
     user: req.user?._id,
   });
-  logger.info(`Paper added successfully: ${paper._id} by User: ${req.user?._id}`, { context: "PaperController" });
+  logger.info(`Paper added successfully: ${paper.title}`, { context: "Papers" });
   res.status(201).json({ success: true, data: paper });
 });
 
@@ -32,15 +32,21 @@ export const getPapers = asyncHandler(async (
     researchDomain: req.query.researchDomain ? (req.query.researchDomain as string).split(",") : undefined,
     impactScore: req.query.impactScore ? (req.query.impactScore as string).split(",") : undefined,
     dateRange: req.query.dateRange as string | undefined,
+    search: req.query.search as string | undefined,
+    sort: req.query.sort as string | undefined,
+    page: req.query.page ? parseInt(req.query.page as string, 10) : 1,
+    limit: req.query.limit ? parseInt(req.query.limit as string, 10) : 10,
   };
 
-  const papers = await findPapersByUser(req.user._id as any, filters);
+  const { papers, total } = await findPapersByUser(req.user.id, filters);
 
-  logger.info(`Fetched ${papers.length} papers for User: ${req.user._id}`, { context: "PaperController" });
+  logger.info(`Fetched ${papers.length} papers for library`, { context: "Papers" });
 
   res.json({
     success: true,
     count: papers.length,
+    total,
+    hasMore: (filters.page || 1) * (filters.limit || 10) < total,
     papers,
   });
 });
@@ -51,8 +57,8 @@ export const getPaperAnalytics = asyncHandler(async (
   next: NextFunction
 ) => {
   if (!req.user) throw new AppError("No user found", 401);
-  const analytics = await generateAnalytics(req.user._id as any);
-  logger.info(`Generated analytics for User: ${req.user._id}`, { context: "PaperController" });
+  const analytics = await generateAnalytics(req.user.id);
+  logger.info(`Generated analytics successfully`, { context: "Papers" });
   res.json({
     success: true,
     data: analytics,
