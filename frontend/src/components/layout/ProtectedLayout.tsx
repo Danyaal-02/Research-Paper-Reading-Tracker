@@ -1,9 +1,10 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import api from "../../lib/axios.ts";
 import Layout from "../common/Layout.tsx";
 import TabNav from "../common/TabNav.tsx";
+import { useAuthQuery } from "../../features/auth/hooks/useAuthQuery.ts";
 
 const ProtectedLayout = () => {
   const queryClient = useQueryClient();
@@ -11,15 +12,7 @@ const ProtectedLayout = () => {
     data: user,
     isLoading: authLoading,
     isError,
-  } = useQuery({
-    queryKey: ["auth", "me"],
-    queryFn: async () => {
-      const { data } = await api.get("/auth/me");
-      return data.user;
-    },
-    retry: false,
-    staleTime: Infinity,
-  });
+  } = useAuthQuery();
 
   if (authLoading) {
     return (

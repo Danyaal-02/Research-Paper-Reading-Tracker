@@ -1,5 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import api from "../../../lib/axios.ts";
+import { DEFAULT_DATE_RANGE } from "../constants.ts";
+import { API_ROUTES } from "../../../lib/apiRoutes.ts";
 
 export interface PaperFilters {
   readingStage?: string[];
@@ -37,7 +39,7 @@ const usePapersQuery = (filters: PaperFilters = {}) => {
   if (filters.impactScore?.length) {
     params.set("impactScore", filters.impactScore.join(","));
   }
-  if (filters.dateRange && filters.dateRange !== "All time") {
+  if (filters.dateRange && filters.dateRange !== DEFAULT_DATE_RANGE) {
     params.set("dateRange", filters.dateRange);
   }
 
@@ -46,7 +48,7 @@ const usePapersQuery = (filters: PaperFilters = {}) => {
   return useQuery<PapersResponse>({
     queryKey: ["papers", filters],
     queryFn: async () => {
-      const { data } = await api.get(`/papers${queryString ? `?${queryString}` : ""}`);
+      const { data } = await api.get(`${API_ROUTES.PAPERS}${queryString ? `?${queryString}` : ""}`);
       return data;
     },
   });

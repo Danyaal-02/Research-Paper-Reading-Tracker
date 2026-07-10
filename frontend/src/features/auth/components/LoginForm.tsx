@@ -6,6 +6,7 @@ import useLoginMutation from "../hooks/useLoginMutation.ts";
 import Input from "../../../components/ui/Input.tsx";
 import Button from "../../../components/ui/Button.tsx";
 import { LogIn } from "lucide-react";
+import { AUTH_STRINGS } from "../constants.ts";
 
 interface LoginFormProps {
   onToggle: () => void;
@@ -30,9 +31,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onToggle }) => {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
       <div className="text-center mb-2">
-        <h2 className="text-2xl font-bold gradient-text mb-1">Welcome Back</h2>
+        <h2 className="text-2xl font-bold gradient-text mb-1">{AUTH_STRINGS.WELCOME_BACK}</h2>
         <p className="text-sm text-surface-400">
-          Sign in to continue tracking your research
+          {AUTH_STRINGS.SIGN_IN_SUBTITLE}
         </p>
       </div>
 
@@ -40,7 +41,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onToggle }) => {
         id="login-email"
         label="Email"
         type="email"
-        placeholder="you@university.edu"
+        placeholder={AUTH_STRINGS.EMAIL_PLACEHOLDER}
         error={errors.email?.message}
         {...register("email")}
       />
@@ -49,7 +50,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onToggle }) => {
         id="login-password"
         label="Password"
         type="password"
-        placeholder="••••••••"
+        placeholder={AUTH_STRINGS.PASSWORD_PLACEHOLDER}
         error={errors.password?.message}
         {...register("password")}
       />

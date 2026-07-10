@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import logger from "../utils/logger.js";
 
 export const errorHandler = (
   err: any,
@@ -6,12 +7,13 @@ export const errorHandler = (
   res: Response,
   next: NextFunction
 ): void => {
-  console.error(err.stack);
+  const statusCode = err.statusCode || (res.statusCode === 200 ? 500 : res.statusCode);
+  
+  logger.error(err.stack || err.message, { context: "ErrorHandler" });
 
-  const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
   res.status(statusCode).json({
     success: false,
     message: err.message || "Server Error",
-    stack: process.env.NODE_ENV === "production" ? null : err.stack,
+    ...(process.env.NODE_ENV !== "production" && { stack: err.stack }),
   });
 };

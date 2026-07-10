@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 import Paper from "../models/Paper.js"; // Note: .js extension for ES Module resolution in TS
+import logger from "../utils/logger.js";
 
 // Load environment variables from the parent directory's .env file
 const __filename = fileURLToPath(import.meta.url);
@@ -19,7 +20,7 @@ const seedDatabase = async () => {
     // 1. Connect to Database
     const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/research-paper-tracker";
     await mongoose.connect(MONGO_URI);
-    console.log("✅ Successfully connected to MongoDB for seeding.");
+    logger.info("✅ Successfully connected to MongoDB for seeding.", { context: "Seed" });
 
     // Helper for date offsets
     const getDaysAgo = (days: number) => {
@@ -131,15 +132,15 @@ const seedDatabase = async () => {
 
     // 3. Purge existing items for the target user
     const deleteResult = await Paper.deleteMany({ user: TARGET_USER_ID });
-    console.log(`🗑️  Purged ${deleteResult.deletedCount} existing paper(s) for user ${TARGET_USER_ID}.`);
+    logger.info(`🗑️  Purged ${deleteResult.deletedCount} existing paper(s) for user ${TARGET_USER_ID}.`, { context: "Seed" });
 
     // 4. Insert mock papers
     const insertResult = await Paper.insertMany(mockPapers);
-    console.log(`🌱 Successfully seeded ${insertResult.length} mock paper(s) into the database!`);
+    logger.info(`🌱 Successfully seeded ${insertResult.length} mock paper(s) into the database!`, { context: "Seed" });
 
     process.exit(0);
-  } catch (error) {
-    console.error("❌ Error seeding the database:", error);
+  } catch (error: any) {
+    logger.error(`❌ Error seeding the database: ${error.message || error}`, { context: "Seed" });
     process.exit(1);
   }
 };

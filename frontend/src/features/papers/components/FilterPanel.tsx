@@ -7,8 +7,7 @@ import {
   IMPACT_SCORES,
 } from "../schemas/paperValidation.ts";
 import { PaperFilters } from "../hooks/usePapersQuery.ts";
-
-const DATE_OPTIONS = ["All time", "This Week", "This Month", "Last 3 Months"];
+import { DATE_OPTIONS, DEFAULT_DATE_RANGE } from "../constants.ts";
 
 interface FilterPanelProps {
   filters: PaperFilters;
@@ -33,7 +32,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onFilterChange }) =>
       readingStage: [],
       researchDomain: [],
       impactScore: [],
-      dateRange: "All time",
+      dateRange: DEFAULT_DATE_RANGE,
     });
   };
 
@@ -41,7 +40,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onFilterChange }) =>
     (filters.readingStage?.length ?? 0) > 0 ||
     (filters.researchDomain?.length ?? 0) > 0 ||
     (filters.impactScore?.length ?? 0) > 0 ||
-    (filters.dateRange && filters.dateRange !== "All time");
+    (filters.dateRange && filters.dateRange !== DEFAULT_DATE_RANGE);
 
   return (
     <div className="glass-card-sm p-5 animate-fade-in">
@@ -134,7 +133,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onFilterChange }) =>
                   name="dateRange"
                   checked={
                     filters.dateRange === option ||
-                    (!filters.dateRange && option === "All time")
+                    (!filters.dateRange && option === DEFAULT_DATE_RANGE)
                   }
                   onChange={() => setDateRange(option)}
                   className="radio-custom"

@@ -1,6 +1,8 @@
 import React from "react";
-import { BookOpen, CheckCircle2, TrendingUp, BarChart } from "lucide-react";
+import { BookOpen, TrendingUp, BarChart } from "lucide-react";
 import { AnalyticsSummary } from "../hooks/useAnalyticsQuery.ts";
+import MetricRow from "./MetricRow.tsx";
+import { ANALYTICS_STRINGS } from "../constants.ts";
 
 interface SummaryCardsProps {
   summary: AnalyticsSummary;
@@ -15,7 +17,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ summary }) => {
           <div className="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center">
             <BookOpen size={16} />
           </div>
-          <h3 className="text-surface-100 font-semibold">Library Overview</h3>
+          <h3 className="text-surface-100 font-semibold">{ANALYTICS_STRINGS.SUMMARY_LIBRARY_TITLE}</h3>
         </div>
         <div className="flex justify-between items-end mb-4">
           <div>
@@ -38,15 +40,12 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ summary }) => {
           <div className="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center">
             <BarChart size={16} />
           </div>
-          <h3 className="text-surface-100 font-semibold">Papers By Stage</h3>
+          <h3 className="text-surface-100 font-semibold">{ANALYTICS_STRINGS.SUMMARY_STAGE_TITLE}</h3>
         </div>
-        <div className="space-y-2 max-h-[200px] overflow-y-auto pr-1 custom-scrollbar">
+        <div className="space-y-2 max-h-50 overflow-y-auto pr-1 custom-scrollbar">
           {summary.papersByStage.length > 0 ? (
             summary.papersByStage.map((s) => (
-              <div key={s.stage} className="flex justify-between items-center text-sm">
-                <span className="text-surface-300 truncate pr-2">{s.stage}</span>
-                <span className="font-mono text-surface-100">{s.count}</span>
-              </div>
+              <MetricRow key={s.stage} label={s.stage} value={s.count} />
             ))
           ) : (
             <p className="text-sm text-surface-500 text-center py-2">No papers tracked</p>
@@ -60,15 +59,17 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ summary }) => {
           <div className="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center">
             <TrendingUp size={16} />
           </div>
-          <h3 className="text-surface-100 font-semibold">Avg Citations / Domain</h3>
+          <h3 className="text-surface-100 font-semibold">{ANALYTICS_STRINGS.SUMMARY_CITATIONS_TITLE}</h3>
         </div>
-        <div className="space-y-2 max-h-[200px] overflow-y-auto pr-1 custom-scrollbar">
+        <div className="space-y-2 max-h-50 overflow-y-auto pr-1 custom-scrollbar">
           {summary.avgCitationsPerDomain.length > 0 ? (
             summary.avgCitationsPerDomain.map((d) => (
-              <div key={d.domain} className="flex justify-between items-center text-sm">
-                <span className="text-surface-300 truncate pr-2">{d.domain}</span>
-                <span className="font-mono text-amber-400">{d.avg}</span>
-              </div>
+              <MetricRow 
+                key={d.domain} 
+                label={d.domain} 
+                value={d.avg} 
+                valueClassName="text-amber-400" 
+              />
             ))
           ) : (
             <p className="text-sm text-surface-500 text-center py-2">No data available</p>

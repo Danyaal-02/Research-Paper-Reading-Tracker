@@ -4,88 +4,18 @@ import {
   getCoreRowModel,
   getSortedRowModel,
   flexRender,
-  ColumnDef,
 } from "@tanstack/react-table";
-import Badge from "../../../components/ui/Badge.tsx";
 import { ArrowUpDown, ArrowUp, ArrowDown, FileText } from "lucide-react";
 import { Paper } from "../hooks/usePapersQuery.ts";
+import { paperColumns } from "./PaperTable.columns.tsx";
+import { PAPER_STRINGS } from "../constants.ts";
 
 interface PaperTableProps {
   papers: Paper[];
 }
 
 const PaperTable: React.FC<PaperTableProps> = ({ papers = [] }) => {
-  const columns = useMemo<ColumnDef<Paper, any>[]>(
-    () => [
-      {
-        accessorKey: "title",
-        header: "Paper Title",
-        size: 280,
-        cell: ({ getValue }) => {
-          const title = getValue<string>();
-          return (
-            <div
-              className="max-w-[280px] truncate font-medium text-surface-100"
-              title={title}
-            >
-              {title}
-            </div>
-          );
-        },
-      },
-      {
-        accessorKey: "firstAuthor",
-        header: "First Author",
-        size: 150,
-        cell: ({ getValue }) => (
-          <span className="text-surface-300">{getValue<string>()}</span>
-        ),
-      },
-      {
-        accessorKey: "researchDomain",
-        header: "Domain",
-        size: 140,
-        cell: ({ getValue }) => <Badge type="domain">{getValue<string>()}</Badge>,
-      },
-      {
-        accessorKey: "readingStage",
-        header: "Reading Stage",
-        size: 155,
-        cell: ({ getValue }) => <Badge type="stage">{getValue<string>()}</Badge>,
-      },
-      {
-        accessorKey: "citationCount",
-        header: "Citations",
-        size: 100,
-        cell: ({ getValue }) => (
-          <span className="text-surface-200 font-mono text-sm">
-            {getValue<number>().toLocaleString()}
-          </span>
-        ),
-      },
-      {
-        accessorKey: "impactScore",
-        header: "Impact",
-        size: 130,
-        cell: ({ getValue }) => <Badge type="impact">{getValue<string>()}</Badge>,
-      },
-      {
-        accessorKey: "dateAdded",
-        header: "Date Added",
-        size: 110,
-        cell: ({ getValue }) => (
-          <span className="text-surface-400 text-sm">
-            {new Date(getValue<string>()).toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-              year: "numeric",
-            })}
-          </span>
-        ),
-      },
-    ],
-    []
-  );
+  const columns = useMemo(() => paperColumns, []);
 
   const table = useReactTable({
     data: papers,
@@ -101,10 +31,10 @@ const PaperTable: React.FC<PaperTableProps> = ({ papers = [] }) => {
           <FileText size={28} className="text-surface-500" />
         </div>
         <h3 className="text-lg font-semibold text-surface-300 mb-2">
-          No papers found
+          {PAPER_STRINGS.EMPTY_TITLE}
         </h3>
         <p className="text-sm text-surface-500 max-w-sm mx-auto">
-          Add your first research paper to start tracking your reading progress, or adjust your filters.
+          {PAPER_STRINGS.EMPTY_SUBTITLE}
         </p>
       </div>
     );

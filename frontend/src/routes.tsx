@@ -1,4 +1,6 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
+import { lazy, Suspense } from "react";
+import { Loader2 } from "lucide-react";
 
 // Layouts
 import RootLayout from "./components/layout/RootLayout.tsx";
@@ -6,11 +8,17 @@ import PublicLayout from "./components/layout/PublicLayout.tsx";
 import ProtectedLayout from "./components/layout/ProtectedLayout.tsx";
 import ErrorBoundary from "./components/layout/ErrorBoundary.tsx";
 
-// Screens
-import LoginScreen from "./features/auth/components/LoginScreen.tsx";
-import SignupScreen from "./features/auth/components/SignupScreen.tsx";
-import PaperLibraryScreen from "./features/papers/components/PaperLibraryScreen.tsx";
-import AnalyticsScreen from "./features/analytics/components/AnalyticsScreen.tsx";
+// Lazy-loaded Screens
+const LoginScreen = lazy(() => import("./features/auth/components/LoginScreen.tsx"));
+const SignupScreen = lazy(() => import("./features/auth/components/SignupScreen.tsx"));
+const PaperLibraryScreen = lazy(() => import("./features/papers/components/PaperLibraryScreen.tsx"));
+const AnalyticsScreen = lazy(() => import("./features/analytics/components/AnalyticsScreen.tsx"));
+
+const LazyFallback = () => (
+  <div className="flex items-center justify-center py-20">
+    <Loader2 size={32} className="animate-spin text-primary-400" />
+  </div>
+);
 
 export const router = createBrowserRouter([
   {
@@ -24,11 +32,19 @@ export const router = createBrowserRouter([
         children: [
           {
             path: "login",
-            element: <LoginScreen />,
+            element: (
+              <Suspense fallback={<LazyFallback />}>
+                <LoginScreen />
+              </Suspense>
+            ),
           },
           {
             path: "signup",
-            element: <SignupScreen />,
+            element: (
+              <Suspense fallback={<LazyFallback />}>
+                <SignupScreen />
+              </Suspense>
+            ),
           },
         ],
       },
@@ -38,11 +54,19 @@ export const router = createBrowserRouter([
         children: [
           {
             path: "library",
-            element: <PaperLibraryScreen />,
+            element: (
+              <Suspense fallback={<LazyFallback />}>
+                <PaperLibraryScreen />
+              </Suspense>
+            ),
           },
           {
             path: "analytics",
-            element: <AnalyticsScreen />,
+            element: (
+              <Suspense fallback={<LazyFallback />}>
+                <AnalyticsScreen />
+              </Suspense>
+            ),
           },
           // Catch-all redirects to library
           {

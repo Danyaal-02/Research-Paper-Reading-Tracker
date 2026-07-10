@@ -12,6 +12,7 @@ import useCreatePaperMutation from "../hooks/useCreatePaperMutation.ts";
 import Modal from "../../../components/ui/Modal.tsx";
 import Input from "../../../components/ui/Input.tsx";
 import Select from "../../../components/ui/Select.tsx";
+import DatePicker from "../../../components/ui/DatePicker.tsx";
 import Button from "../../../components/ui/Button.tsx";
 import { Plus } from "lucide-react";
 
@@ -115,13 +116,14 @@ const AddPaperModal: React.FC<AddPaperModalProps> = ({ isOpen, onClose }) => {
           />
         </div>
 
-        <Input
-          id="paper-date"
-          label="Date Added"
-          type="date"
-          error={errors.dateAdded?.message}
-          {...register("dateAdded")}
-        />
+        <div className="md:col-span-2">
+          <DatePicker
+            id="paper-date"
+            label="Date Added"
+            error={errors.dateAdded?.message}
+            {...register("dateAdded")}
+          />
+        </div>
 
         <div className="flex gap-3 mt-2 pt-4 border-t border-surface-700/50">
           <Button

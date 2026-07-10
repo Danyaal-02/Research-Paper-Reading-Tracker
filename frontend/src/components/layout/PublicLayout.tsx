@@ -1,21 +1,12 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
-import api from "../../lib/axios.ts";
+import { useAuthQuery } from "../../features/auth/hooks/useAuthQuery.ts";
 
 const PublicLayout = () => {
   const {
     data: user,
     isLoading: authLoading,
-  } = useQuery({
-    queryKey: ["auth", "me"],
-    queryFn: async () => {
-      const { data } = await api.get("/auth/me");
-      return data.user;
-    },
-    retry: false,
-    staleTime: Infinity,
-  });
+  } = useAuthQuery();
 
   if (authLoading) {
     return (
