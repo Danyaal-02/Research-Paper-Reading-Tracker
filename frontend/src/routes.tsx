@@ -1,5 +1,5 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, ComponentType } from "react";
 import { Loader2 } from "lucide-react";
 
 // Layouts
@@ -8,11 +8,29 @@ import PublicLayout from "./components/layout/PublicLayout.tsx";
 import ProtectedLayout from "./components/layout/ProtectedLayout.tsx";
 import ErrorBoundary from "./components/layout/ErrorBoundary.tsx";
 
+// Async Module Interceptor
+function lazyWithRetry(componentImport: () => Promise<{ default: ComponentType<any> }>) {
+  return () => componentImport().catch((error) => {
+    // Check if the network chunk file is missing or cached incorrectly
+    const isChunkLoadFailed = error.message && (
+      error.message.includes('Failed to fetch dynamically imported module') ||
+      error.message.includes('Loading chunk')
+    );
+    
+    if (isChunkLoadFailed) {
+      window.location.reload();
+      return { default: () => null }; // Return placeholder layout while page refreshes
+    }
+    
+    throw error; // Let unrelated application runtime exceptions bubble up normally
+  });
+}
+
 // Lazy-loaded Screens
-const LoginScreen = lazy(() => import("./features/auth/components/LoginScreen.tsx"));
-const SignupScreen = lazy(() => import("./features/auth/components/SignupScreen.tsx"));
-const PaperLibraryScreen = lazy(() => import("./features/papers/components/PaperLibraryScreen.tsx"));
-const AnalyticsScreen = lazy(() => import("./features/analytics/components/AnalyticsScreen.tsx"));
+const LoginScreen = lazy(lazyWithRetry(() => import("./features/auth/components/LoginScreen.tsx")));
+const SignupScreen = lazy(lazyWithRetry(() => import("./features/auth/components/SignupScreen.tsx")));
+const PaperLibraryScreen = lazy(lazyWithRetry(() => import("./features/papers/components/PaperLibraryScreen.tsx")));
+const AnalyticsScreen = lazy(lazyWithRetry(() => import("./features/analytics/components/AnalyticsScreen.tsx")));
 
 const LazyFallback = () => (
   <div className="flex items-center justify-center py-20">

@@ -45,7 +45,7 @@ const PaperLibraryScreen = () => {
             <input
               type="text"
               placeholder="Search papers..."
-              className="input-base pl-9 w-full"
+              className="input-base pl-9! w-full"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
             />
