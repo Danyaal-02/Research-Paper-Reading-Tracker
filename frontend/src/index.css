@@ -440,3 +440,21 @@ input[type="date"] {
 .tooltip:hover::after {
   opacity: 1;
 }
+
+@keyframes undock {
+  from {
+    border-radius: 0.75rem;
+  }
+  to {
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+  }
+}
+
+.sticky-undock {
+  animation: undock linear both;
+  animation-timeline: scroll();
+  animation-range: 0px 40px;
+}

@@ -16,9 +16,9 @@ const Layout: React.FC<LayoutProps> = ({ user, onLogout, children }) => {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <header className="glass-card-sm sticky top-0 z-40 mx-4 mt-4 px-6 py-3 flex items-center justify-between">
+      <header className="glass-card-sm top-0 z-40 mx-4 mt-4 px-6 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-500 to-accent-violet flex items-center justify-center">
+          <div className="w-9 h-9 rounded-xl bg-linear-to-br from-primary-500 to-accent-violet flex items-center justify-center">
             <BookOpen size={18} className="text-white" />
           </div>
           <div>

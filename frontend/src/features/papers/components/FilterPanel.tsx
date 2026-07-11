@@ -29,7 +29,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onFilterChange, onCl
   };
 
   return (
-    <div className="glass-card-sm p-5 animate-fade-in">
+    <div className="glass-card-sm p-5 animate-fade-in rounded-xl!">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2 text-surface-200">
           <Filter size={16} />
