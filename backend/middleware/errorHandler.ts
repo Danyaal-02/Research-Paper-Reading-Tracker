@@ -1,14 +1,15 @@
 import { Request, Response, NextFunction } from "express";
 import logger from "../utils/logger.js";
+import { GENERAL_MESSAGES } from "../constants/messages.js";
 
 export const errorHandler = (
   err: Error & { statusCode?: number } | unknown,
-  req: Request,
+  _req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ): void => {
   let statusCode = res.statusCode === 200 ? 500 : res.statusCode;
-  let message = "Server Error";
+  let message: string = GENERAL_MESSAGES.SERVER_ERROR;
   let stack = undefined;
 
   if (err instanceof Error) {

@@ -7,7 +7,7 @@ import {
   IMPACT_SCORES,
 } from "../schemas/paperValidation.ts";
 import { PaperFilters } from "../types.ts";
-import { DATE_OPTIONS, DEFAULT_DATE_RANGE } from "../constants.ts";
+import PAPER_CONFIGS from "../constants.ts";
 
 interface FilterPanelProps {
   filters: PaperFilters;
@@ -104,7 +104,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onFilterChange, onCl
             Date Added
           </h4>
           <div className="flex flex-col gap-1.5">
-            {DATE_OPTIONS.map((option) => (
+            {PAPER_CONFIGS.DATE_OPTIONS.map((option) => (
               <label
                 key={option}
                 htmlFor={`filter-date-${option}`}
@@ -116,7 +116,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onFilterChange, onCl
                   name="dateRange"
                   checked={
                     filters.dateRange === option ||
-                    (!filters.dateRange && option === DEFAULT_DATE_RANGE)
+                    (!filters.dateRange && option === PAPER_CONFIGS.DEFAULT_DATE_RANGE)
                   }
                   onChange={() => setDateRange(option)}
                   className="radio-custom"

@@ -1,6 +1,6 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import api from "../../../lib/axios.ts";
-import { DEFAULT_DATE_RANGE } from "../constants.ts";
+import PAPER_CONFIGS from "../constants.ts";
 import { API_ROUTES } from "../../../lib/apiRoutes.ts";
 
 import { PaperFilters, PapersResponse } from "../types.ts";
@@ -20,7 +20,7 @@ const useInfinitePapersQuery = (filters: PaperFilters = {}) => {
       if (filters.impactScore?.length) {
         params.set("impactScore", filters.impactScore.join(","));
       }
-      if (filters.dateRange && filters.dateRange !== DEFAULT_DATE_RANGE) {
+      if (filters.dateRange && filters.dateRange !== PAPER_CONFIGS.DEFAULT_DATE_RANGE) {
         params.set("dateRange", filters.dateRange);
       }
       if (filters.search) {

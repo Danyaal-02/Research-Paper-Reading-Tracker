@@ -3,7 +3,7 @@ import api from "../../../lib/axios.ts";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { PaperFormData } from "../schemas/paperValidation.ts";
-import { PAPER_STRINGS } from "../constants.ts";
+import { PAPER_MESSAGES } from "../../../constants/messages.ts";
 import { API_ROUTES } from "../../../lib/apiRoutes.ts";
 
 const useCreatePaperMutation = () => {
@@ -18,10 +18,10 @@ const useCreatePaperMutation = () => {
       // Invalidate both papers and analytics queries
       queryClient.invalidateQueries({ queryKey: ["papers"] });
       queryClient.invalidateQueries({ queryKey: ["analytics"] });
-      toast.success(PAPER_STRINGS.ADD_SUCCESS);
+      toast.success(PAPER_MESSAGES.ADD_SUCCESS);
     },
     onError: (error: unknown) => {
-      let message: string = PAPER_STRINGS.ADD_ERROR;
+      let message: string = PAPER_MESSAGES.ADD_ERROR;
       if (axios.isAxiosError(error)) {
         message = error.response?.data?.message || message;
       } else if (error instanceof Error) {

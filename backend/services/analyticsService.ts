@@ -1,6 +1,5 @@
 import { Types } from "mongoose";
 import Paper from "../models/Paper.js";
-import { READING_STAGES } from "../constants/paperEnums.js";
 
 export const generateAnalytics = async (userId: Types.ObjectId) => {
   // 1. Funnel Chart Data: Count by Reading Stage

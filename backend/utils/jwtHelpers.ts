@@ -1,6 +1,5 @@
 import jwt from "jsonwebtoken";
 import { Response } from "express";
-import { Types } from "mongoose";
 import { JWT_SECRET, JWT_EXPIRES_IN, COOKIE_MAX_AGE } from "../constants/auth.js";
 
 export const generateTokenAndSetCookie = (res: Response, userId: string): void => {

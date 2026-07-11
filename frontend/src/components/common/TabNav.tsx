@@ -17,7 +17,7 @@ const tabs: Tab[] = [
 ];
 
 // Centralized route asset prefetches
-const prefetchModules: Record<string, () => Promise<any>> = {
+const prefetchModules: Record<string, () => Promise<unknown>> = {
   analytics: () => import("../../features/analytics/components/AnalyticsScreen.tsx"),
   library: () => import("../../features/papers/components/PaperLibraryScreen.tsx"),
   settings: () => Promise.resolve(),

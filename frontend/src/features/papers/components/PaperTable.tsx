@@ -9,8 +9,8 @@ import {
 import { ArrowUpDown, ArrowUp, ArrowDown, FileText } from "lucide-react";
 import { Paper } from "../types.ts";
 import { paperColumns } from "./PaperTable.columns.tsx";
-import { PAPER_STRINGS } from "../constants.ts";
 import { TableSkeleton } from "../../../components/ui/TableSkeleton.tsx";
+import { PAPER_MESSAGES } from "../../../constants/messages.ts";
 
 interface PaperTableProps {
   papers: Paper[];
@@ -67,10 +67,10 @@ const PaperTable: React.FC<PaperTableProps> = ({
           <FileText size={28} className="text-surface-500" />
         </div>
         <h3 className="text-lg font-semibold text-surface-300 mb-2">
-          {PAPER_STRINGS.EMPTY_TITLE}
+          {PAPER_MESSAGES.EMPTY_TITLE}
         </h3>
         <p className="text-sm text-surface-500 max-w-sm mx-auto">
-          {PAPER_STRINGS.EMPTY_SUBTITLE}
+          {PAPER_MESSAGES.EMPTY_SUBTITLE}
         </p>
       </div>
     );

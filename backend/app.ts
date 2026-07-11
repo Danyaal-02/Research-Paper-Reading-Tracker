@@ -1,4 +1,4 @@
-import express, { Express, Request, Response, NextFunction } from "express";
+import express, { Express, Request, Response } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
@@ -11,8 +11,8 @@ import paperRoutes from "./routes/paperRoutes.js";
 
 // Middleware
 import { errorHandler } from "./middleware/errorHandler.js";
-import { AppError } from "./utils/AppError.js";
 import morganMiddleware from "./middleware/morganMiddleware.js";
+import { AUTH_MESSAGES, GENERAL_MESSAGES } from "./constants/messages.js";
 
 const app: Express = express();
 
@@ -27,7 +27,7 @@ const corsOptions = {
     if (!origin || ALLOWED_ORIGINS.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error(`Origin ${origin} not allowed by CORS`));
+      callback(new Error(`${AUTH_MESSAGES.NOT_ALLOWED_CORS}: ${origin}`));
     }
   },
   credentials: true,
@@ -44,10 +44,10 @@ app.use(morganMiddleware);
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 20, // 20 login attempts per window
-  message: { success: false, message: 'Too many login attempts. Try again later.' },
+  message: { success: false, message: AUTH_MESSAGES.TOO_MANY_ATTEMPTS },
 });
 app.use(express.json());
-app.use((req, res, next) => {
+app.use((req, _res, next) => {
   mongoSanitize.sanitize(req.body);
   mongoSanitize.sanitize(req.query);
   mongoSanitize.sanitize(req.params);
@@ -56,8 +56,8 @@ app.use((req, res, next) => {
 app.use(cookieParser());
 
 // Base Route
-app.get("/", (req: Request, res: Response) => {
-  res.json({ success: true, message: "Research Paper Tracker API is running 🚀" });
+app.get("/", (_req: Request, res: Response) => {
+  res.json({ success: true, message: GENERAL_MESSAGES.API_RUNNING });
 });
 
 // API Routes
@@ -67,10 +67,10 @@ app.use("/api/auth", authRoutes);
 app.use("/api/papers", paperRoutes);
 
 // 2. ROUTE CATCH-ALL AND 404 SANITIZATION
-app.use((req: Request, res: Response, next: NextFunction) => {
+app.use((req: Request, res: Response) => {
   res.status(404).json({
     success: false,
-    message: `Route ${req.originalUrl} not found on this server.`
+    message: `${AUTH_MESSAGES.ROUTE_NOT_FOUND} (${req.originalUrl})`
   });
 });
 

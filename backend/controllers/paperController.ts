@@ -6,12 +6,12 @@ import { AuthRequest } from "../types/index.js";
 import { getPaginatedPapers } from "../services/paperService.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { AppError } from "../utils/AppError.js";
-import logger from "../utils/logger.js";
+import { AUTH_MESSAGES } from "../constants/messages.js";
 
 export const addPaper = asyncHandler(async (
   req: AuthRequest,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) => {
   const paper = await Paper.create({
     ...req.body,
@@ -23,9 +23,9 @@ export const addPaper = asyncHandler(async (
 export const getPapers = asyncHandler(async (
   req: AuthRequest,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) => {
-  if (!req.user) throw new AppError("No user found", 401);
+  if (!req.user) throw new AppError(AUTH_MESSAGES.NO_USER_FOUND, 401);
 
   const filters = {
     readingStage: req.query.readingStage ? (req.query.readingStage as string).split(",") : undefined,
@@ -53,7 +53,7 @@ export const getPapers = asyncHandler(async (
 export const getPaperAnalytics = asyncHandler(async (
   req: AuthRequest,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) => {
   if (!req.user) throw new AppError("No user found", 401);
   const analytics = await generateAnalytics(req.user._id as Types.ObjectId);

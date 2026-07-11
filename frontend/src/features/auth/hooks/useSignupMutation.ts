@@ -5,6 +5,7 @@ import { AuthResponse } from "../types.ts";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { SignupFormData } from "../schemas/authValidation.ts";
+import { AUTH_MESSAGES } from "../../../constants/messages.ts";
 
 const useSignupMutation = () => {
   const queryClient = useQueryClient();
@@ -16,10 +17,10 @@ const useSignupMutation = () => {
     },
     onSuccess: (data) => {
       queryClient.setQueryData(["auth", "me"], data.user);
-      toast.success("Account created successfully!");
+      toast.success(AUTH_MESSAGES.SIGNUP_SUCCESS);
     },
     onError: (error: unknown) => {
-      let message: string = "Signup failed. Please try again.";
+      let message: string = AUTH_MESSAGES.SIGNUP_ERROR;
       if (axios.isAxiosError(error)) {
         message = error.response?.data?.message || message;
       } else if (error instanceof Error) {

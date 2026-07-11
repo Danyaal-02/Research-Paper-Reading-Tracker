@@ -4,18 +4,18 @@ import { generateTokenAndSetCookie } from "../utils/jwtHelpers.js";
 import { AuthRequest } from "../types/index.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { AppError } from "../utils/AppError.js";
-import logger from "../utils/logger.js";
+import { AUTH_MESSAGES } from "../constants/messages.js";
 
 export const signup = asyncHandler(async (
   req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) => {
   const { email, password } = req.body;
 
   const userExists = await User.findOne({ email });
   if (userExists) {
-    throw new AppError("User already exists", 400);
+    throw new AppError(AUTH_MESSAGES.USER_EXISTS, 400);
   }
 
   const user = await User.create({ email, passwordHash: password });
@@ -31,7 +31,7 @@ export const signup = asyncHandler(async (
 export const login = asyncHandler(async (
   req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) => {
   const { email, password } = req.body;
 
@@ -44,11 +44,11 @@ export const login = asyncHandler(async (
       user: { id: user._id, email: user.email },
     });
   } else {
-    throw new AppError("Invalid email or password", 401);
+    throw new AppError(AUTH_MESSAGES.INVALID_LOGIN, 401);
   }
 });
 
-export const logout = (req: Request, res: Response) => {
+export const logout = (_req: Request, res: Response) => {
   res.clearCookie("token", {
     httpOnly: true,
     secure: true, // Crucial for HTTPS on Render
@@ -58,18 +58,18 @@ export const logout = (req: Request, res: Response) => {
   
   return res.status(200).json({ 
     success: true, 
-    message: "Logged out successfully" 
+    message: AUTH_MESSAGES.LOGOUT_SUCCESS 
   });
 };
 
 export const getMe = asyncHandler(async (
   req: AuthRequest,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) => {
   const user = await User.findById(req.user?.id).select("-passwordHash");
   if (!user) {
-    throw new AppError("User not found", 404);
+    throw new AppError(AUTH_MESSAGES.USER_NOT_FOUND, 404);
   }
   res.json({
     success: true,

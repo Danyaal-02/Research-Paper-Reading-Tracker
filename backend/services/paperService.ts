@@ -1,4 +1,3 @@
-import { Types } from 'mongoose';
 import Paper, { IPaper } from '../models/Paper.js';
 import { getDateRangeStart } from '../utils/dateFilters.js';
 import { FilterQuery } from 'mongoose';

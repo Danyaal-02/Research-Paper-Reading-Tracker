@@ -1,13 +1,14 @@
 import jwt from "jsonwebtoken";
-import { Request, Response, NextFunction } from "express";
-import User, { IUser } from "../models/User.js";
+import { Response, NextFunction } from "express";
+import User from "../models/User.js";
 import { JWT_SECRET } from "../constants/auth.js";
 import { AppError } from "../utils/AppError.js";
 import { AuthRequest } from "../types/index.js";
+import { AUTH_MESSAGES } from "../constants/messages.js";
 
 export const protect = async (
   req: AuthRequest,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ): Promise<void> => {
   let token;
@@ -17,7 +18,7 @@ export const protect = async (
   }
 
   if (!token) {
-    return next(new AppError("Not authorized, no token", 401));
+    return next(new AppError(AUTH_MESSAGES.AUTH_NO_TOKEN, 401));
   }
 
   try {
@@ -28,12 +29,12 @@ export const protect = async (
     
     const user = await User.findById(decoded.id).select("-passwordHash");
     if (!user) {
-      return next(new AppError("Not authorized, user not found", 401));
+      return next(new AppError(AUTH_MESSAGES.AUTH_USER_NOT_FOUND, 401));
     }
     
     req.user = user;
     next();
   } catch (error) {
-    next(new AppError("Not authorized, token failed", 401));
+    next(new AppError(AUTH_MESSAGES.AUTH_TOKEN_FAILED, 401));
   }
 };
