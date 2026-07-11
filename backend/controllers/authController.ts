@@ -48,12 +48,18 @@ export const login = asyncHandler(async (
   }
 });
 
-export const logout = (req: Request, res: Response): void => {
-  res.cookie("token", "", {
+export const logout = (req: Request, res: Response) => {
+  res.clearCookie("token", {
     httpOnly: true,
-    expires: new Date(0),
+    secure: true, // Crucial for HTTPS on Render
+    sameSite: "none", // Mandated for cross-origin domain structures
+    path: "/"
   });
-  res.json({ success: true, message: "Logged out successfully" });
+  
+  return res.status(200).json({ 
+    success: true, 
+    message: "Logged out successfully" 
+  });
 };
 
 export const getMe = asyncHandler(async (

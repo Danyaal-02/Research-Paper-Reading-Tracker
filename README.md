@@ -5,7 +5,7 @@ An enterprise-grade Full-Stack Research Paper Reading Tracker designed to stream
 ## 🚀 Deployed Endpoints
 
 **Production Infrastructure Access Points:**
-- **Frontend Deployment (Static UI):** [https://research-reading-tracker.onrender.com](https://research-reading-tracker.onrender.com)
+- **Frontend Deployment (Live UI):** [https://research-reading-tracker.onrender.com](https://research-reading-tracker.onrender.com)
 - **Backend API Endpoint:** [https://research-paper-tracker-c6f6.onrender.com](https://research-paper-tracker-c6f6.onrender.com)
 
 ---
@@ -111,13 +111,23 @@ cd frontend
 npm run dev
 ```
 
+### 💡 Demo Credentials
+
+You can log in to the deployed application using the following existing test user credentials:
+- **Email:** `testuser@example.com`
+- **Password:** `Password@123`
+
 ---
 
 ## 🧪 Database Seeding Routines
 
 To evaluate Highcharts components and infinite scrolling tables out of the box, you can automate database hydration using the included seed scripts.
 
-Run the following script to inject a realistic mockup dataset (mock papers, custom pipeline tracking stages, user indices) directly into your local or remote MongoDB cluster:
+> [!IMPORTANT]
+> **User Authentication Required Before Seeding**
+> Since research papers are strictly scoped to individual user accounts, you must sign up or log in to the application at least once to initialize a user record. The seeding script automatically queries the database for the first available user and binds the generated mock papers to that user. Seeding will fail if no user exists.
+
+Run the following script to inject a realistic mockup dataset (mock papers, custom pipeline tracking stages, user indices) directly into your MongoDB cluster:
 
 ```bash
 cd backend
