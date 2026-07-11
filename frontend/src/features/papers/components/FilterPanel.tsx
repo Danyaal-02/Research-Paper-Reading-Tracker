@@ -29,7 +29,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onFilterChange, onCl
   };
 
   return (
-    <div className="glass-card-sm p-5 animate-fade-in rounded-xl!">
+    <div className="glass-card-sm p-5 animate-fade-in rounded-xl! max-h-64 overflow-y-auto lg:max-h-none">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2 text-surface-200">
           <Filter size={16} />
@@ -43,7 +43,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onFilterChange, onCl
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Reading Stage */}
         <div>
           <h4 className="text-xs font-semibold text-surface-400 uppercase tracking-wider mb-2.5">
