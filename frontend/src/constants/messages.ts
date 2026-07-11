@@ -1,8 +1,8 @@
 export const AUTH_MESSAGES = {
   WELCOME_BACK: "Welcome Back",
   SIGN_IN_SUBTITLE: "Sign in to continue tracking your research",
-  EMAIL_PLACEHOLDER: "you@university.edu",
-  PASSWORD_PLACEHOLDER: "••••••••",
+  EMAIL_PLACEHOLDER: "Email",
+  PASSWORD_PLACEHOLDER: "Password",
   LOGIN_SUCCESS: "Welcome back!",
   LOGIN_ERROR: "Login failed. Please try again.",
   SIGNUP_SUCCESS: "Account created successfully!",

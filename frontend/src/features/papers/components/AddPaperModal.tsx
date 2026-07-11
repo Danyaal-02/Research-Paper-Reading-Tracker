@@ -62,7 +62,7 @@ const AddPaperModal: React.FC<AddPaperModalProps> = ({ isOpen, onClose }) => {
         <Input
           id="paper-title"
           label="Paper Title"
-          placeholder="e.g. Attention Is All You Need"
+          placeholder="Title"
           error={errors.title?.message}
           {...register("title")}
         />
@@ -70,7 +70,7 @@ const AddPaperModal: React.FC<AddPaperModalProps> = ({ isOpen, onClose }) => {
         <Input
           id="paper-author"
           label="First Author Name"
-          placeholder="e.g. Ashish Vaswani"
+          placeholder="Name"
           error={errors.firstAuthor?.message}
           {...register("firstAuthor")}
         />

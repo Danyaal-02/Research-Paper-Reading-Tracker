@@ -47,7 +47,7 @@ const PaperLibraryScreen = () => {
               <div className="relative flex-1 md:w-64">
                 <input
                   type="text"
-                  placeholder="Search papers..."
+                  placeholder="Search"
                   className="input-base pl-9! w-full"
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
