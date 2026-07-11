@@ -1,4 +1,4 @@
-import express, { Express, Request, Response } from "express";
+import express, { Express, Request, Response, NextFunction } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
@@ -16,22 +16,12 @@ import morganMiddleware from "./middleware/morganMiddleware.js";
 
 const app: Express = express();
 
-// Security Middleware
-app.use(helmet({ crossOriginResourcePolicy: false }));
-app.use(morganMiddleware);
-
-
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 20, // 20 login attempts per window
-  message: { success: false, message: 'Too many login attempts. Try again later.' },
-});
-
 // Global Middleware
 const ALLOWED_ORIGINS = process.env.CORS_ORIGINS 
   ? process.env.CORS_ORIGINS.split(",").map(origin => origin.trim())
   : ["http://localhost:5173", "http://127.0.0.1:5173"];
 
+// 1. ABSOLUTE TOP-LEVEL CORS REGISTERING
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -47,6 +37,16 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+// Security Middleware
+app.use(helmet({ crossOriginResourcePolicy: false }));
+app.use(morganMiddleware);
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20, // 20 login attempts per window
+  message: { success: false, message: 'Too many login attempts. Try again later.' },
+});
 app.use(express.json());
 app.use((req, res, next) => {
   mongoSanitize.sanitize(req.body);
@@ -66,6 +66,14 @@ app.use("/api/auth/login", authLimiter);
 app.use("/api/auth/signup", authLimiter);
 app.use("/api/auth", authRoutes);
 app.use("/api/papers", paperRoutes);
+
+// 2. ROUTE CATCH-ALL AND 404 SANITIZATION
+app.use((req: Request, res: Response, next: NextFunction) => {
+  res.status(404).json({
+    success: false,
+    message: `Route ${req.originalUrl} not found on this server.`
+  });
+});
 
 // Global Error Handler
 app.use(errorHandler as express.ErrorRequestHandler);
