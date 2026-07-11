@@ -5,7 +5,7 @@ import { FilterQuery } from 'mongoose';
 import { PaperFilters } from '../types/index.js';
 import { parseSortString, getPaginationData } from '../utils/queryUtils.js';
 
-export const findPapersByUser = async (userId: string, filters: PaperFilters) => {
+export const getPaginatedPapers = async (userId: string, filters: PaperFilters) => {
   const query: FilterQuery<IPaper> = { user: userId };
 
   if (filters.readingStage?.length)   query.readingStage   = { $in: filters.readingStage };
@@ -24,13 +24,23 @@ export const findPapersByUser = async (userId: string, filters: PaperFilters) =>
 
   // Parse multi-column sort: "citationCount,-dateAdded" -> { citationCount: 1, dateAdded: -1 }
   const sortObj = parseSortString(filters.sort);
-  const { skip, limit } = getPaginationData(filters.page, filters.limit);
+  const { skip, limit, page } = getPaginationData(filters.page, filters.limit);
 
-  const total = await Paper.countDocuments(query);
-  const papers = await Paper.find(query)
+  const totalCount = await Paper.countDocuments(query);
+  const items = await Paper.find(query)
     .sort(sortObj)
     .skip(skip)
     .limit(limit);
 
-  return { papers, total };
+  return {
+    items,
+    nextPage: skip + limit < totalCount ? page + 1 : null,
+    totalCount
+  };
 };
+
+export const findPapersByUser = async (userId: string, filters: PaperFilters) => {
+  const { items, totalCount } = await getPaginatedPapers(userId, filters);
+  return { papers: items, total: totalCount };
+};
+

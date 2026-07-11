@@ -3,7 +3,7 @@ import { Types } from "mongoose";
 import Paper from "../models/Paper.js";
 import { generateAnalytics } from "../services/analyticsService.js";
 import { AuthRequest } from "../types/index.js";
-import { findPapersByUser } from "../services/paperService.js";
+import { getPaginatedPapers } from "../services/paperService.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { AppError } from "../utils/AppError.js";
 import logger from "../utils/logger.js";
@@ -38,14 +38,15 @@ export const getPapers = asyncHandler(async (
     limit: req.query.limit ? parseInt(req.query.limit as string, 10) : 10,
   };
 
-  const { papers, total } = await findPapersByUser(req.user.id, filters);
+  const { items, nextPage, totalCount } = await getPaginatedPapers(req.user.id, filters);
 
   res.json({
     success: true,
-    count: papers.length,
-    total,
-    hasMore: (filters.page || 1) * (filters.limit || 10) < total,
-    papers,
+    count: items.length,
+    total: totalCount,
+    nextPage,
+    hasMore: nextPage !== null,
+    papers: items,
   });
 });
 
